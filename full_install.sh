@@ -10,7 +10,7 @@ CWD=$(pwd)
 
 # Reading data of new user to panel
 read -p "Введите имя пользователя: " USER_NAME
-read -p "Введите пароль пользователя: " USER_PASSWD
+read -sr -p "Введите пароль пользователя: " USER_PASSWD
 
 adduser --disabled-password --gecos '' $USER_NAME
 
