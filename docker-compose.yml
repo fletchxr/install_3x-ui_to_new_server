@@ -1,0 +1,49 @@
+services:
+  3x-ui:
+    image: ghcr.io/mhsanaei/3x-ui:latest
+    container_name: 3x-ui
+    hostname: yourhostname
+    volumes:
+      - $PWD/db/:/etc/x-ui/
+      - $PWD/cert/:/root/cert/
+    environment:
+      XRAY_VMESS_AEAD_FORCED: "false"
+      X_UI_ENABLE_FAIL2BAN: "true"
+    tty: true
+    network_mode: host
+    restart: unless-stopped
+
+  prometheus:
+    image: bitnami/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - $PWD/prometheus/:/etc/prometheus/
+    ports:
+      - "127.0.0.1:9090:9090"
+
+  x-ui-exporter:
+    image: hteppl/x-ui-exporter
+    container_name: x-ui-exporter
+    restart: unless-stopped
+    environment:
+      - PANEL_BASE_URL=http://3x-ui:2053
+      - PANEL_USERNAME=admin
+      - PANEL_PASSWORD=admin
+      - METRICS_PORT=9080
+    ports:
+      - "127.0.0.1:9080:9080"
+
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    volumes:
+      - $PWD/grafana/:/etc/grafana/provisioning/datasources/
+      - grafana_data:/var/lib/grafana
+    environment:
+      - PROMETHEUS_URL=prometheus:9090
+      - GF_DATABASE_WAL=true
+    ports:
+      - "3000:3000"
+
+volumes:
+  grafana_data:
