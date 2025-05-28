@@ -6,11 +6,13 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-CWD=$(pwd)
+CWD="$(cd "$(dirname "$0")" && pwd)"
 
 # Reading data of new user to panel
 read -p "Введите имя пользователя: " USER_NAME
 read -sr -p "Введите пароль пользователя: " USER_PASSWD
+
+USER_NAME=$(echo $USER_NAME | tr '[:upper:]' '[:lower:]')
 
 adduser --disabled-password --gecos '' $USER_NAME
 
@@ -26,7 +28,7 @@ apt install -y curl
 bash <(curl -sSL https://get.docker.com)
 
 git clone https://github.com/MHSanaei/3x-ui.git
-cd 3x-ui
+cd /home/$USER_NAME/3x-ui
 
 mkdir grafana/ prometheus/
 
@@ -49,7 +51,7 @@ scrape_configs:
       - targets: ['x-ui-exporter:9080']
 EOF
 
-cp $CWD/docker-compose.yml .
+cp $CWD/docker-compose.yml /home/$USER_NAME/3x-ui/
 
 docker compose up -d
 
