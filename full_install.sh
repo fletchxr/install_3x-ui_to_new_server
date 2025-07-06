@@ -38,7 +38,7 @@ apiVersion: 1
 datasources:
   - name: Prometheus
     type: prometheus
-    url: http://$PROMETHEUS_URL
+    url: http://\$PROMETHEUS_URL
 EOF
 
 cat <<EOF> prometheus/prometheus.yml
